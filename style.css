@@ -1,0 +1,17 @@
+/* This targets the whole page */
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #222; /* Dark background so the game pops */
+    display: flex;
+    justify-content: center; /* Centers game horizontally */
+    align-items: center;     /* Centers game vertically */
+    height: 100vh;           /* Uses the full height of your screen */
+    overflow: hidden;        /* Prevents scrollbars from appearing */
+}
+
+/* This targets the container where the game lives */
+#game-container {
+    border: 4px solid #f9d71c; /* A nice Shin-chan yellow border */
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
