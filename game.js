@@ -1,3 +1,9 @@
+// --- DATABASE INITIALIZATION ---
+// I've plugged in your specific URL and Anon Key here
+const supabaseUrl = 'https://jqnfrlglroaqoiegxwgm.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxbmZybGdscm9hcW9pZWd4d2dtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2NTg2MjcsImV4cCI6MjA5MjIzNDYyN30.81N2orHjnq787crXEpfUl7Wqf9Pmz3YI2AWwMRkUwhQ';
+const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
 const config = {
     type: Phaser.AUTO,
     width: 1067, 
@@ -101,7 +107,6 @@ function create() {
 }
 
 function update() {
-    // STOP TIMER IF MISSION IS FINISHED
     if (!gameStarted || missionFinished) return;
 
     let elapsed = Math.floor((this.time.now - startTime) / 1000);
@@ -138,7 +143,7 @@ function triggerGameOver() {
     const ui = document.getElementById('custom-ui');
     ui.style.display = 'flex';
     document.getElementById('ui-title').innerText = "CAUGHT!";
-    document.getElementById('ui-message').innerText = "Misae or the Principal got you!";
+    document.getElementById('ui-message').innerText = "Mission Failed. Try again!";
     document.getElementById('ui-action-btn').onclick = () => location.reload();
 }
 
@@ -163,17 +168,15 @@ function startBossBattle(scene) {
         callback: () => {
             if (missionFinished) return;
             survivalTime--;
-            if (survivalTime >= 0) {
-                timerText.setText("SURVIVE: " + survivalTime);
-            }
+            if (survivalTime >= 0) timerText.setText("SURVIVE: " + survivalTime);
             if (survivalTime <= 0) triggerWin(scene);
         },
         loop: true
     });
 }
 
-function triggerWin(scene) {
-    missionFinished = true; // LOCKS THE TIMER
+async function triggerWin(scene) {
+    missionFinished = true;
     scene.physics.pause();
     timerText.setText("SURVIVE: 0");
 
@@ -181,32 +184,56 @@ function triggerWin(scene) {
     const ui = document.getElementById('custom-ui');
     ui.style.display = 'flex';
     document.getElementById('ui-title').innerText = "MISSION COMPLETE!";
-    document.getElementById('ui-message').innerText = `Final Time: ${finalSecs}s`;
+    document.getElementById('ui-message').innerText = `Syncing Global Rank... Time: ${finalSecs}s`;
     
     document.getElementById('input-section').style.display = 'block';
     
     const btn = document.getElementById('ui-action-btn');
-    btn.innerText = "SAVE & RANK";
-    btn.onclick = () => {
+    btn.innerText = "SAVE TO CLOUD";
+    btn.onclick = async () => {
         const name = document.getElementById('player-name').value || "SpeedyShin";
-        saveScore(name, finalSecs);
+        await saveGlobalScore(name, finalSecs);
     };
 }
 
-function saveScore(name, time) {
-    let lb = JSON.parse(localStorage.getItem('shinchan_lb') || '[]');
-    lb.push({ name: name, time: time });
-    lb.sort((a, b) => a.time - b.time);
-    let top5 = lb.slice(0, 5);
-    localStorage.setItem('shinchan_lb', JSON.stringify(top5));
+async function saveGlobalScore(name, time) {
+    const btn = document.getElementById('ui-action-btn');
+    btn.disabled = true;
+    btn.innerText = "SAVING...";
 
+    const { error } = await supabaseClient
+        .from('leaderboard')
+        .insert([{ name: name, score: time }]);
+
+    if (error) {
+        console.error('Error saving:', error);
+        alert("Cloud Save Failed. Check if table 'leaderboard' exists!");
+    } else {
+        await showGlobalLeaderboard();
+    }
+}
+
+async function showGlobalLeaderboard() {
     document.getElementById('input-section').style.display = 'none';
     const board = document.getElementById('leaderboard-content');
     board.style.display = 'block';
-    board.innerHTML = "<b>🏆 TOP 5 SPEEDRUNNERS 🏆</b><br>" + 
-        top5.map((e, i) => `${i+1}. ${e.name}: ${e.time}s`).join("<br>");
+    board.innerHTML = "Fetching Worldwide Rankings...";
+
+    const { data, error } = await supabaseClient
+        .from('leaderboard')
+        .select('name, score')
+        .order('score', { ascending: true })
+        .limit(5);
+
+    if (error) {
+        board.innerHTML = "Failed to load global rankings.";
+    } else {
+        board.innerHTML = "<b>🌎 WORLDWIDE TOP 5 🏆</b><br>" + 
+            data.map((e, i) => `${i+1}. ${e.name}: ${e.score}s`).join("<br>");
+    }
     
     const btn = document.getElementById('ui-action-btn');
+    btn.disabled = false;
     btn.innerText = "PLAY AGAIN";
     btn.onclick = () => location.reload();
 }
