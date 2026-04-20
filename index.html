@@ -1,15 +1,17 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Shin-chan: Kasukabe Speedrunner</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shin-chan: Global Speedrunner</title>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser-arcade-physics.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body { margin: 0; background: #222; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
-        #game-container { border: 4px solid #ffcc00; position: relative; }
+        #game-container { border: 4px solid #ffcc00; position: relative; width: 1067px; height: 600px; }
         
-        /* Start Menu and Custom UI Styles */
         #ui-layer, #custom-ui {
-            position: absolute; width: 1067px; height: 600px; 
+            position: absolute; width: 100%; height: 100%; 
             background: rgba(0,0,0,0.8); display: flex; flex-direction: column; 
             justify-content: center; align-items: center; z-index: 10; 
             color: white; font-family: 'Arial Black', sans-serif; text-align: center;
@@ -28,12 +30,13 @@
 
         input {
             padding: 10px; width: 80%; border: 4px solid #333; 
-            border-radius: 10px; font-size: 18px; margin-top: 10px;
+            border-radius: 10px; font-size: 18px; margin-top: 10px; text-align: center;
         }
 
         #leaderboard-content {
             text-align: left; background: #fff; padding: 15px; 
-            border-radius: 10px; margin-top: 15px; font-family: monospace;
+            border-radius: 10px; margin-top: 15px; font-family: 'Courier New', Courier, monospace;
+            max-height: 200px; overflow-y: auto;
         }
     </style>
 </head>
@@ -42,24 +45,26 @@
     <div id="game-container">
         <div id="ui-layer">
             <div class="dialog-box">
-                <h1 style="font-size: 40px; margin: 0;">KASUKABE SPEEDRUN</h1>
-                <p>Collect 15 Cards & Survive the Principal!</p>
+                <h1 style="font-size: 40px; margin: 0;">GLOBAL SPEEDRUN</h1>
+                <p>Compete with players worldwide!</p>
                 <button id="start-btn">START MISSION</button>
             </div>
         </div>
 
         <div id="custom-ui" style="display: none;">
             <div class="dialog-box">
-                <h2 id="ui-title">GAME OVER</h2>
+                <h2 id="ui-title">MISSION COMPLETE!</h2>
                 <p id="ui-message"></p>
                 
                 <div id="input-section" style="display: none;">
                     <input type="text" id="player-name" placeholder="Enter Your Name">
                 </div>
 
-                <div id="leaderboard-content" style="display: none;"></div>
+                <div id="leaderboard-content" style="display: none;">
+                    Loading Global Scores...
+                </div>
                 
-                <button id="ui-action-btn">RESTART</button>
+                <button id="ui-action-btn">SAVE & RANK</button>
             </div>
         </div>
     </div>
