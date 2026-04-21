@@ -3,44 +3,157 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shin-chan: Kushal Carnage Edition</title>
+    <title>Kasukabe Carnage</title>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser-arcade-physics.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <style>
-        body { margin: 0; background: #1a1a1a; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
-        #game-container { border: 6px solid #ffcc00; border-radius: 10px; position: relative; width: 1067px; height: 600px; }
-        #ui-layer, #custom-ui {
-            position: absolute; width: 100%; height: 100%; background: rgba(0,0,0,0.7); 
-            display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10; 
-            color: white; font-family: 'Arial Black', sans-serif; text-align: center;
+        /* MATTE ANIME THEME FONTS */
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
+
+        body {
+            margin: 0;
+            background: #2b2b2b; /* Muted dark grey */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Fredoka One', cursive;
         }
-        .dialog-box { background: #ffcc00; border: 8px solid #333; border-radius: 25px; padding: 35px; width: 550px; color: #333; box-shadow: 12px 12px 0px rgba(0,0,0,0.4); }
-        button { padding: 15px 45px; font-size: 22px; cursor: pointer; background: #333; color: #ffcc00; border: none; border-radius: 50px; font-weight: bold; margin-top: 25px; }
-        input { padding: 12px; width: 85%; border: 5px solid #333; border-radius: 12px; font-size: 20px; margin-top: 15px; text-align: center; }
-        #leaderboard-content { text-align: left; background: #fff; padding: 15px; border-radius: 15px; margin-top: 20px; color: #333; font-family: 'Courier New', monospace; border: 4px solid #333; max-height: 150px; overflow-y: auto; }
+
+        #game-wrapper {
+            position: relative;
+            width: 1067px;
+            height: 600px;
+            border: 5px solid #8b4513; /* Earthy brown border */
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+
+        #game-container {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* SIMPLE UI OVERLAY */
+        .ui-overlay {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            color: #f5f5dc; /* Beige text for less eye strain */
+            text-align: center;
+        }
+
+        /* SMOOTH & SIMPLE BUTTONS */
+        .menu-btn {
+            width: 260px;
+            padding: 16px;
+            margin: 10px;
+            font-weight: bold;
+            font-size: 20px;
+            cursor: pointer;
+            background: #556b2f; /* Dark Olive Green */
+            color: white;
+            border: 3px solid #f5f5dc;
+            border-radius: 15px;
+            font-family: 'Fredoka One';
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+
+        .menu-btn:hover {
+            background: #8b4513; /* Saddle Brown on hover */
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .menu-btn:active {
+            transform: translateY(0);
+        }
+
+        input {
+            padding: 14px;
+            font-size: 18px;
+            border-radius: 10px;
+            border: 3px solid #556b2f;
+            margin-bottom: 15px;
+            width: 240px;
+            text-align: center;
+            font-family: 'Fredoka One';
+            background: #fdf5e6; /* Old Lace background */
+        }
+
+        h1 { 
+            font-size: 55px; 
+            margin-bottom: 30px; 
+            color: #f5f5dc;
+            text-shadow: 3px 3px 0px #556b2f; /* Simple dark shadow */
+        }
+
+        h2 { font-size: 38px; color: #f5f5dc; }
+        p { margin: 6px 0; font-size: 18px; opacity: 0.9; }
     </style>
 </head>
 <body>
-    <div id="game-container">
-        <div id="ui-layer">
-            <div class="dialog-box">
-                <h1>KASAKABE CARNAGE</h1>
-                <p>Level 1: Collect & Survive | Level 2: Fight & Win</p>
-                <button id="start-btn">START MISSION</button>
-            </div>
+
+    <div id="game-wrapper">
+        <div id="game-container"></div>
+
+        <div id="main-menu" class="ui-overlay" style="background: rgba(43, 43, 43, 0.7); z-index: 100;">
+            <h1>KUSAKABE CARNAGE</h1>
+            <button class="menu-btn" onclick="startGame()">START MISSION</button>
+            <button class="menu-btn" onclick="toggleSettings(true)">CONTROLS</button>
+            <button class="menu-btn" onclick="quitGame()">QUIT</button>
         </div>
-        <div id="custom-ui" style="display: none;">
-            <div class="dialog-box">
-                <h2 id="ui-title">MISSION COMPLETE!</h2>
-                <p id="ui-message"></p>
-                <div id="input-section" style="display: none;">
-                    <input type="text" id="player-name" placeholder="Enter Your Name">
-                </div>
-                <div id="leaderboard-content" style="display: none;">Syncing Global Scores...</div>
-                <button id="ui-action-btn">SAVE & RANK</button>
+
+        <div id="settings-modal" class="ui-overlay" style="display: none; background: rgba(85, 107, 47, 0.9); z-index: 110;">
+            <h2>MISSION GEAR</h2>
+            <div style="background: rgba(0,0,0,0.2); padding: 25px; border-radius: 15px; margin-bottom: 20px;">
+                <p><strong>MOVE:</strong> Arrow Keys</p>
+                <p><strong>SHOOT:</strong> Spacebar (Hero Suit)</p>
+                <p><strong>DASH:</strong> Shift Key</p>
+                <p><strong>PAUSE:</strong> Press ESC</p>
             </div>
+            <button class="menu-btn" onclick="toggleSettings(false)">BACK TO MENU</button>
+        </div>
+
+        <div id="pause-screen" class="ui-overlay" style="display: none; background: rgba(0,0,0,0.6); z-index: 120;">
+            <h1 id="pause-title">MISSION PAUSED</h1>
+            <p>Ready to jump back in?</p>
+            <button class="menu-btn" onclick="resumeFromButton()">RESUME</button>
+            <button class="menu-btn" onclick="location.reload()">ABANDON</button>
+        </div>
+
+        <div id="custom-ui" class="ui-overlay" style="display: none; background: rgba(43, 43, 43, 0.95); z-index: 130;">
+            <h1 id="ui-title">MISSION CLEAR!</h1>
+            <p id="ui-message" style="font-size: 22px; margin-bottom: 20px;"></p>
+            
+            <div id="input-section" style="display:none;">
+                <input type="text" id="player-name" maxlength="12" placeholder="ENTER NAME">
+            </div>
+            
+            <button id="ui-action-btn" class="menu-btn">SUBMIT</button>
         </div>
     </div>
+
     <script src="game.js"></script>
+
+    <script>
+        function toggleSettings(show) {
+            document.getElementById('settings-modal').style.display = show ? 'flex' : 'none';
+        }
+        function quitGame() {
+            if(confirm("Quit to Desktop?")) window.close();
+        }
+    </script>
+
 </body>
 </html>
