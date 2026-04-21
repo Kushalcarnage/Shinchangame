@@ -96,8 +96,8 @@ class Level1 extends Phaser.Scene {
         else if (this.cursors.right.isDown) { this.player.setVelocityX(320); this.player.flipX = true; this.player.anims.play('shin_walk', true); }
         else { this.player.setVelocityX(0); this.player.setFrame(0); }
         if (this.cursors.up.isDown && this.player.body.touching.down) this.player.setVelocityY(-620);
-        this.misae.setVelocityX(this.misae.x < this.player.x ? 180 : -180);
-        if ((this.player.y < this.misae.y - 100 || this.misae.body.blocked.left) && this.misae.body.touching.down) this.misae.setVelocityY(-400);
+        this.misae.setVelocityX(this.misae.x < this.player.x ? 140 : -140);
+        if ((this.player.y < this.misae.y - 100 || this.misae.body.blocked.left) && this.misae.body.touching.down) this.misae.setVelocityY(-350);
         if (this.isSurvival) {
             this.enchou.setVelocityX(this.enchou.x < this.player.x ? 230 : -230);
             if (this.player.y < this.enchou.y - 100 && this.enchou.body.touching.down) this.enchou.setVelocityY(-650);
