@@ -3,72 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shin-chan: Global Speedrunner</title>
+    <title>Shin-chan: Kushal Carnage Edition</title>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser-arcade-physics.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { margin: 0; background: #222; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
-        #game-container { border: 4px solid #ffcc00; position: relative; width: 1067px; height: 600px; }
-        
+        body { margin: 0; background: #1a1a1a; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        #game-container { border: 6px solid #ffcc00; border-radius: 10px; position: relative; width: 1067px; height: 600px; }
         #ui-layer, #custom-ui {
-            position: absolute; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.8); display: flex; flex-direction: column; 
-            justify-content: center; align-items: center; z-index: 10; 
+            position: absolute; width: 100%; height: 100%; background: rgba(0,0,0,0.7); 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10; 
             color: white; font-family: 'Arial Black', sans-serif; text-align: center;
         }
-
-        .dialog-box {
-            background: #ffcc00; border: 8px solid #333; border-radius: 20px; 
-            padding: 30px; width: 500px; color: #333; box-shadow: 10px 10px 0px rgba(0,0,0,0.3);
-        }
-
-        button {
-            padding: 15px 40px; font-size: 20px; cursor: pointer; 
-            background: #333; color: #ffcc00; border: none; 
-            border-radius: 50px; font-weight: bold; margin-top: 20px;
-        }
-
-        input {
-            padding: 10px; width: 80%; border: 4px solid #333; 
-            border-radius: 10px; font-size: 18px; margin-top: 10px; text-align: center;
-        }
-
-        #leaderboard-content {
-            text-align: left; background: #fff; padding: 15px; 
-            border-radius: 10px; margin-top: 15px; font-family: 'Courier New', Courier, monospace;
-            max-height: 200px; overflow-y: auto;
-        }
+        .dialog-box { background: #ffcc00; border: 8px solid #333; border-radius: 25px; padding: 35px; width: 550px; color: #333; box-shadow: 12px 12px 0px rgba(0,0,0,0.4); }
+        button { padding: 15px 45px; font-size: 22px; cursor: pointer; background: #333; color: #ffcc00; border: none; border-radius: 50px; font-weight: bold; margin-top: 25px; }
+        input { padding: 12px; width: 85%; border: 5px solid #333; border-radius: 12px; font-size: 20px; margin-top: 15px; text-align: center; }
+        #leaderboard-content { text-align: left; background: #fff; padding: 15px; border-radius: 15px; margin-top: 20px; color: #333; font-family: 'Courier New', monospace; border: 4px solid #333; max-height: 150px; overflow-y: auto; }
     </style>
 </head>
 <body>
-
     <div id="game-container">
         <div id="ui-layer">
             <div class="dialog-box">
-                <h1 style="font-size: 40px; margin: 0;">GLOBAL SPEEDRUN</h1>
-                <p>Compete with players worldwide!</p>
+                <h1>KASAKABE CARNAGE</h1>
+                <p>Level 1: Collect & Survive | Level 2: Fight & Win</p>
                 <button id="start-btn">START MISSION</button>
             </div>
         </div>
-
         <div id="custom-ui" style="display: none;">
             <div class="dialog-box">
                 <h2 id="ui-title">MISSION COMPLETE!</h2>
                 <p id="ui-message"></p>
-                
                 <div id="input-section" style="display: none;">
                     <input type="text" id="player-name" placeholder="Enter Your Name">
                 </div>
-
-                <div id="leaderboard-content" style="display: none;">
-                    Loading Global Scores...
-                </div>
-                
+                <div id="leaderboard-content" style="display: none;">Syncing Global Scores...</div>
                 <button id="ui-action-btn">SAVE & RANK</button>
             </div>
         </div>
     </div>
-
     <script src="game.js"></script>
 </body>
 </html>
