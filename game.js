@@ -154,7 +154,7 @@ class Level1 extends Phaser.Scene {
         this.misae.setVelocityX(this.misae.x < this.player.x ? 140 : -140);
         this.misae.flipX = this.misae.body.velocity.x > 0;
         this.misae.anims.play('misae_run', true);
-        if ((this.player.y < this.misae.y - 100 || this.misae.body.blocked.left) && this.misae.body.touching.down) this.misae.setVelocityY(-480);
+        if ((this.player.y < this.misae.y - 100 || this.misae.body.blocked.left) && this.misae.body.touching.down) this.misae.setVelocityY(-320);
         if (this.isSurvival) {
             this.enchou.setVelocityX(this.enchou.x < this.player.x ? 230 : -230);
             this.enchou.flipX = this.enchou.body.velocity.x > 0;
