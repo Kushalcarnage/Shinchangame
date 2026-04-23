@@ -73,7 +73,7 @@ class Level1 extends Phaser.Scene {
         this.load.audio('boss_music', 'boss.mp3');
     }
     create() {
-        this.score = 0; this.survivalTime = 30; this.isSurvival = false; this.canDash = true; this.isDashing = false;
+        this.score = 0; this.survivalTime = 15; this.isSurvival = false; this.canDash = true; this.isDashing = false;
         this.physics.world.setBounds(0, 0, 4500, 600);
         this.add.image(0, 0, 'bg_home').setOrigin(0, 0).setDisplaySize(1500, 600).setDepth(-1);
         this.add.image(1500, 0, 'bg_apartments').setOrigin(0, 0).setDisplaySize(1500, 600).setDepth(-1);
